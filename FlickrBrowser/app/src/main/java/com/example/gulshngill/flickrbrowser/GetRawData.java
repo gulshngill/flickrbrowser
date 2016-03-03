@@ -17,17 +17,17 @@ enum DownloadStatus {IDLE, PROCESSING, NOT_INITIALISED,FAILED_OR_EMPTY, OK }
 
 
 public class GetRawData {
-    private String LOG_TAG = GetRawData.class.getSimpleName();
-    private String mRawUrl;
-    private String mData;
-    private DownloadStatus mDownloadStatus;
+    private String LOG_TAG = GetRawData.class.getSimpleName(); //get name of class
+    private String mRawUrl; //url of api
+    private String mData; //downloaded data from url
+    private DownloadStatus mDownloadStatus; //displays download status from enum
 
-    public GetRawData(String mRawUrl) {
-        this.mRawUrl = mRawUrl;
+    public GetRawData(String mRawUrl) { //constructor; if it receives a String as an argument
+        this.mRawUrl = mRawUrl; //store argument into mRawUrl variable
         this.mDownloadStatus = DownloadStatus.IDLE;
     }
 
-    public void reset() {
+    public void reset() {  //called after action is completed
         this.mDownloadStatus = DownloadStatus.IDLE;
         this.mRawUrl = null;
         this.mData = null;
@@ -41,9 +41,16 @@ public class GetRawData {
         return mDownloadStatus;
     }
 
-    public class DownloadRawData extends AsyncTask<String, Void, String> {
-        protected void onPostExecute(String webData) {
-            mData = webData;
+    public void execute() {
+        this.mDownloadStatus = DownloadStatus.PROCESSING;
+        DownloadRawData downloadRawData = new DownloadRawData();
+        downloadRawData.execute(mRawUrl);
+    }
+
+    public class DownloadRawData extends AsyncTask<String, Void, String> { //async class must be subclassed
+
+        protected void onPostExecute(String webData) { //update download data
+            mData = webData; //save data
             Log.v(LOG_TAG, "Returned Data" + mData);
 
             if(mData == null) {
@@ -60,26 +67,26 @@ public class GetRawData {
         @Override
         protected String doInBackground(String... params) {
             HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
+            BufferedReader reader = null; //Reads text from a character-input stream
 
             if(params == null)
                 return null;
 
             try {
-                URL url = new URL(params[0]);
+                URL url = new URL(params[0]); //convert string to url object
 
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
+                urlConnection = (HttpURLConnection) url.openConnection(); //open the connection and pass it to url connection object
+                urlConnection.setRequestMethod("GET"); //set http request method
+                urlConnection.connect(); //connect to url
 
-                InputStream inputStream = urlConnection.getInputStream();
+                InputStream inputStream = urlConnection.getInputStream(); //create inputstream to get incoming data from urlConnection
 
-                if(inputStream == null)
+                if(inputStream == null) //return null if there's noting in input stream
                     return null;
 
-                StringBuffer buffer = new StringBuffer();
+                StringBuffer buffer = new StringBuffer(); //like a String, but can be modified
 
-                reader = new BufferedReader(new InputStreamReader(inputStream));
+                reader = new BufferedReader(new InputStreamReader(inputStream)); //reader(bufferedReader), reads from the inputstream
 
                 String line;
                 while((line = reader.readLine()) != null) {
