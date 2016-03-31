@@ -7,6 +7,7 @@ package com.example.gulshngill.flickrbrowser;
 
 import java.util.List;
 import android.net.Uri;
+import android.util.Log;
 
 public class GetFlickrJsonData extends GetRawData {
 
@@ -20,7 +21,7 @@ public class GetFlickrJsonData extends GetRawData {
         createAndUpdateUri(searchCriteria, matchall);
     }
 
-    private boolean createAndUpdateUri(String searchCriteria, boolean matchall) {
+    public boolean createAndUpdateUri(String searchCriteria, boolean matchall) {
         final String FLICKR_API_BASE_URL = "https://api.flickr.com/services/feeds/photos_public.gne";
         final String TAGS_PARAM = "tags";
         final String TAGMODE_PARAM = "tagmode";
@@ -34,8 +35,24 @@ public class GetFlickrJsonData extends GetRawData {
                 .appendQueryParameter(NO_JSON_CALLBACK_PARAM, "1")
                 .build();
 
-
         return destinationUri != null;
+    }
+
+    public void processResult() {
+        if(getmDownloadStatus() != DownloadStatus.OK) {
+            Log.e(LOG_TAG, "Error downloading raw file");
+            return;
+        }
+
+        final String FLIKR_ITEMS = "items";
+    }
+    public class DownloadJsonData extends DownloadRawData {
+        protected void onPostExecute(String webData) {
+            super.onPostExecute(webData);
+            processResult();
+        }
+
+
     }
 
 }
