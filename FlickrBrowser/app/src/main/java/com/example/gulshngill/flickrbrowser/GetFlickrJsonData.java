@@ -27,14 +27,8 @@ public class GetFlickrJsonData extends GetRawData {
         photos = new ArrayList<Photo>();
     }
 
-    public void execute() {
-        super.setmRawUrl(destinationUri.toString());
-        DownloadJsonData downloadJsonData = new DownloadJsonData();
-        Log.v(LOG_TAG, "Built URI = " + destinationUri.toString());
-        downloadJsonData.execute(destinationUri.toString());
-    }
-
     public boolean createAndUpdateUri(String searchCriteria, boolean matchall) { //the json url
+        //constants
         final String FLICKR_API_BASE_URL = "https://api.flickr.com/services/feeds/photos_public.gne";
         final String TAGS_PARAM = "tags";
         final String TAGMODE_PARAM = "tagmode";
@@ -51,8 +45,16 @@ public class GetFlickrJsonData extends GetRawData {
         return destinationUri != null;
     }
 
+    public void execute() {
+        super.setRawUrl(destinationUri.toString()); //set url
+        DownloadJsonData downloadJsonData = new DownloadJsonData();
+        Log.v(LOG_TAG, "Built URI = " + destinationUri.toString());
+        downloadJsonData.execute(destinationUri.toString()); //run background task
+    }
+
+    //executed last; properties of object is stored in photo object
     public void processResult() { //parse the json received
-        if(getmDownloadStatus() != DownloadStatus.OK) {
+        if(getDownloadStatus() != DownloadStatus.OK) {
             Log.e(LOG_TAG, "Error downloading raw file");
             return;
         }
@@ -67,7 +69,7 @@ public class GetFlickrJsonData extends GetRawData {
         final String FLICKR_TAGS = "tags";
 
         try {
-            JSONObject jsonData = new JSONObject(getmData());
+            JSONObject jsonData = new JSONObject(getRawData());
             JSONArray itemsArray = jsonData.getJSONArray(FLICKR_ITEMS); //contains list of all photos
 
             for(int i=0; i<itemsArray.length(); i++) {
