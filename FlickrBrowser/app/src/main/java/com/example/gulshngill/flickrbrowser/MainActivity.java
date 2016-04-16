@@ -4,12 +4,21 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = "MainActiviry";
+    private List<Photo> photoList = new ArrayList<Photo>();
+    private RecyclerView recyclerView;
+    private FlickrRecyclerViewAdapter viewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +36,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        //GetRawData rawData = new GetRawData("https://api.flickr.com/services/feeds/photos_public.gne?tags=android,lollipop&format=json&nojsoncallback=1");
         GetFlickrJsonData jsonData = new GetFlickrJsonData("android, lollipop", true);
-        //rawData.execute();
         jsonData.execute();
     }
 
@@ -53,5 +60,27 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class ProcessPhoto extends GetFlickrJsonData {
+        public ProcessPhoto(String searchCriteria, boolean matchall) {
+            super(searchCriteria, matchall);
+        }
+
+        public void execute(){
+            super.execute();
+            ProcessData processData = new ProcessData();
+            processData.execute();
+        }
+
+        public class ProcessData extends DownloadJsonData {
+            @Override
+            protected void onPostExecute(String webData) {
+                super.onPostExecute(webData);
+
+                viewAdapter = new FlickrRecyclerViewAdapter(MainActivity.this, getPhotos());
+                recyclerView.setAdapter(viewAdapter);
+            }
+        }
     }
 }
