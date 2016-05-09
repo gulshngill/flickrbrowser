@@ -1,29 +1,39 @@
 package com.example.gulshngill.flickrbrowser;
 
-import java.io.StringBufferInputStream;
-
 /**
- * Created by gulshngill on 03/03/2016.
+ * Created by gulshngill on 07/05/2016.
  */
 public class Photo {
     private String title;
+    private String link;
+    private String photoUrl;
+    private String description;
     private String author;
     private String authorId;
-    private String link;
-    private String tags;
-    private String image;
 
-    public Photo(String title, String author, String authorId, String link, String tags, String image) {
+    public Photo(String title, String link, String photoUrl, String description, String author, String authorId) {
         this.title = title;
+        this.link = link;
+        this.photoUrl = photoUrl;
+        this.description = description;
         this.author = author;
         this.authorId = authorId;
-        this.link = link;
-        this.tags = tags;
-        this.image = image;
     }
 
     public String getTitle() {
         return title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getAuthor() {
@@ -34,27 +44,15 @@ public class Photo {
         return authorId;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
     @Override
     public String toString() {
         return "Photo{" +
                 "title='" + title + '\'' +
+                ", link='" + link + '\'' +
+                ", photoUrl='" + photoUrl + '\'' +
+                ", description='" + description + '\'' +
                 ", author='" + author + '\'' +
                 ", authorId='" + authorId + '\'' +
-                ", link='" + link + '\'' +
-                ", tags='" + tags + '\'' +
-                ", image='" + image + '\'' +
                 '}';
     }
 }
