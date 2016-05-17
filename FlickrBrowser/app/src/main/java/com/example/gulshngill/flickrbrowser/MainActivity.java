@@ -15,6 +15,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
     private PhotoRecyclerViewAdapter photoRecyclerViewAdapter;
     private RecyclerView recyclerView;
@@ -33,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        photoRecyclerViewAdapter = new PhotoRecyclerViewAdapter(new ArrayList<Photo>(), MainActivity.this);
+        recyclerView.setAdapter(photoRecyclerViewAdapter);
+
         //ProcessPhoto processPhoto = new ProcessPhoto("starcraft");
         //processPhoto.execute();
 
@@ -50,9 +56,10 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.v(LOG_TAG, query);
+                String formattedQuery = query.replaceAll("\\s+",",");
+                Log.v(LOG_TAG, formattedQuery);
                 hintText.setVisibility(View.GONE);
-                ProcessPhoto processPhoto = new ProcessPhoto(query);
+                ProcessPhoto processPhoto = new ProcessPhoto(formattedQuery);
                 processPhoto.execute();
 
                 return false;
@@ -99,8 +106,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                photoRecyclerViewAdapter = new PhotoRecyclerViewAdapter(getPhotoList(), MainActivity.this);
-                recyclerView.setAdapter(photoRecyclerViewAdapter);
+                photoRecyclerViewAdapter.loadNewData(getPhotoList());
 
             }
         }

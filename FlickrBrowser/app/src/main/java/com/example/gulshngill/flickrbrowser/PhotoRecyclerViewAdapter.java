@@ -74,4 +74,9 @@ public class PhotoRecyclerViewAdapter extends RecyclerView.Adapter {
     public int getItemCount() {
         return (null != photoList ? photoList.size() : 0);
     }
+
+    public void loadNewData(List<Photo> photoList) {
+        this.photoList = photoList;
+        notifyDataSetChanged();
+    }
 }
