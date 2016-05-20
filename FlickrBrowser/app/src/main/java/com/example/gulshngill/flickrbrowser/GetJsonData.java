@@ -51,7 +51,7 @@ public class GetJsonData extends GetRawData {
     public void processData(String rawData) {
         final String FLICKR_ITEMS = "items";
         final String FLICKR_TITLE = "title";
-        final String FLICKR_LINK = "link";
+        //final String FLICKR_LINK = "link";
         final String FLICKR_MEDIA = "media";
         final String FLICKR_PHOTOURL = "m";
         final String FLICKR_DESCRIPTION = "description";
@@ -70,10 +70,11 @@ public class GetJsonData extends GetRawData {
                 JSONObject jsonPhoto = jsonArray.getJSONObject(i);
 
                 String title = jsonPhoto.getString(FLICKR_TITLE);
-                String link = jsonPhoto.getString(FLICKR_LINK);
+                //String link = jsonPhoto.getString(FLICKR_LINK);
 
                 JSONObject jsonMedia = jsonPhoto.getJSONObject(FLICKR_MEDIA);
                 String photoUrl = jsonMedia.getString(FLICKR_PHOTOURL);
+                String link = photoUrl.replaceFirst("_m.","_b.");
 
                 String description = jsonPhoto.getString(FLICKR_DESCRIPTION);
                 String author = jsonPhoto.getString(FLICKR_AUTHOR);

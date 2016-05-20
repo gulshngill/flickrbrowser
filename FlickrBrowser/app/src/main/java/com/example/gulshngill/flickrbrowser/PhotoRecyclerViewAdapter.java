@@ -30,6 +30,10 @@ public class PhotoRecyclerViewAdapter extends RecyclerView.Adapter {
         this.context = context;
     }
 
+    public Photo getPhoto(int position) {
+        return (null != photoList ? photoList.get(position) : null);
+    }
+
     public class PhotoViewHolder extends RecyclerView.ViewHolder {
         protected ImageView thumbnail;
         protected TextView title;
@@ -45,7 +49,8 @@ public class PhotoRecyclerViewAdapter extends RecyclerView.Adapter {
     @Override
     public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //initialize viewholder (create view from browse.xml file by inflating it into a view object)
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.browse, null);
+        //set to false because RecyclerView is responsible for determining when to inflate and present its child views
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.browse,parent,false);
 
         //create new photoViewHolder object using the inflated browse.xml
         PhotoViewHolder photoViewHolder = new PhotoViewHolder(view);

@@ -1,5 +1,6 @@
 package com.example.gulshngill.flickrbrowser;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView hintText;
     private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String PHOTO_TRANSFER = "PHOTO_TRANSFER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,21 @@ public class MainActivity extends AppCompatActivity {
         photoRecyclerViewAdapter = new PhotoRecyclerViewAdapter(new ArrayList<Photo>(), MainActivity.this);
         recyclerView.setAdapter(photoRecyclerViewAdapter);
 
+        recyclerView.addOnItemTouchListener(new RecyclerItemClickListenter(this, recyclerView, new RecyclerItemClickListenter.OnItemCickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //Toast.makeText(MainActivity.this, "Click", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, ViewPhotoDetailsActivity.class);
+                intent.putExtra(PHOTO_TRANSFER, photoRecyclerViewAdapter.getPhoto(position));
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                Toast.makeText(MainActivity.this, "Long Tap", Toast.LENGTH_SHORT).show();
+            }
+        }));
         //ProcessPhoto processPhoto = new ProcessPhoto("starcraft");
         //processPhoto.execute();
 
@@ -49,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-
+        //search
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
