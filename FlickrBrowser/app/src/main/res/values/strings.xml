@@ -4,4 +4,6 @@
     <string name="search_string">Search</string>
     <string name="title_activity_view_photo_details">ViewPhotoDetailsActivity</string>
     <string name="image">Image</string>
+    <string name="searchable_label">Search Query</string>
+    <string name="searchable_hint">Search Images</string>
 </resources>

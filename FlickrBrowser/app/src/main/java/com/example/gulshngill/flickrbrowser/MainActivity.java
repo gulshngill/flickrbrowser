@@ -1,9 +1,14 @@
 package com.example.gulshngill.flickrbrowser;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -26,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView hintText;
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String PHOTO_TRANSFER = "PHOTO_TRANSFER";
+    private final String FLICKR_QUERY = "FLICKR_QUERY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListenter(this, recyclerView, new RecyclerItemClickListenter.OnItemCickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                //Toast.makeText(MainActivity.this, "Click", Toast.LENGTH_SHORT).show();
+                //create new intent from mainactivity to viewphotodetailsactivity
                 Intent intent = new Intent(MainActivity.this, ViewPhotoDetailsActivity.class);
                 intent.putExtra(PHOTO_TRANSFER, photoRecyclerViewAdapter.getPhoto(position));
                 startActivity(intent);
@@ -69,28 +75,62 @@ public class MainActivity extends AppCompatActivity {
 
         //search
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
+        //searchmanager
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        //text listener
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 String formattedQuery = query.replaceAll("\\s+",",");
                 Log.v(LOG_TAG, formattedQuery);
+
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPref.edit().putString(FLICKR_QUERY, formattedQuery).commit();
+
                 hintText.setVisibility(View.GONE);
                 ProcessPhoto processPhoto = new ProcessPhoto(formattedQuery);
                 processPhoto.execute();
 
-                return false;
+                searchView.clearFocus();
+
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                return true;
             }
         }
         );
 
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(photoRecyclerViewAdapter !=  null) {
+            String query = getSavedPreferenceData(FLICKR_QUERY);
+
+            if(query.length() > 0) {
+                hintText.setVisibility(View.GONE);
+                ProcessPhoto processPhoto = new ProcessPhoto(query);
+                processPhoto.execute();
+            }
+        }
+
+
+    }
+
+    //get last searched string preference manager
+    private String getSavedPreferenceData(String key) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        return sharedPref.getString(key, "");
     }
 
     @Override
@@ -104,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

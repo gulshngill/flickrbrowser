@@ -1,11 +1,16 @@
 package com.example.gulshngill.flickrbrowser;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,10 +21,13 @@ import com.squareup.picasso.Picasso;
 
 public class ViewPhotoDetailsActivity extends AppCompatActivity {
 
-    private final String PHOTO_TRANSFER = "PHOTO_TRANSFER";
+    //private final String PHOTO_TRANSFER = "PHOTO_TRANSFER";
     private TextView title;
     private TextView author;
     private ImageView image;
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String PHOTO_TRANSFER = "PHOTO_TRANSFER";
+    private final String FLICKR_QUERY = "FLICKR_QUERY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +37,7 @@ public class ViewPhotoDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        //get Photo from intent
         Intent intent = getIntent();
         Photo photo = (Photo) intent.getSerializableExtra(PHOTO_TRANSFER);
 
@@ -54,15 +63,20 @@ public class ViewPhotoDetailsActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
+        //searchmanager
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                String formattedQuery = query.replaceAll("\\s+",",");
-//                Log.v(LOG_TAG, formattedQuery);
-//                hintText.setVisibility(View.GONE);
-//                ProcessPhoto processPhoto = new ProcessPhoto(formattedQuery);
-//                processPhoto.execute();
-                return false;
+                Intent intent = new Intent(ViewPhotoDetailsActivity.this, MainActivity.class);
+
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                sharedPref.edit().putString(FLICKR_QUERY, query).commit();
+
+                startActivity(intent);
+                return true;
             }
 
             @Override

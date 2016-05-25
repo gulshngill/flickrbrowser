@@ -59,6 +59,9 @@ public class GetJsonData extends GetRawData {
         final String FLICKR_AUTHOR_ID = "author_id";
 
         try {
+            if(rawData == null)
+                rawData = "";
+
             //convert rawData to jsonObject
             JSONObject jsonObject = new JSONObject(rawData);
 
